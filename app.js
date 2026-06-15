@@ -24,14 +24,8 @@ let brandAnimInterval = null;
 let isBrandAnimActive = false;
 let userHasInteracted = false;
 
-// Default Leaderboard (Community benchmarks)
-const DEFAULT_LEADERBOARD = [
-  { name: "SOCRATES", time: 94, date: "Community" },
-  { name: "PLATO", time: 112, date: "Community" },
-  { name: "DIOTIMA", time: 138, date: "Community" },
-  { name: "SENECA", time: 165, date: "Community" },
-  { name: "GUEST", time: 210, date: "Community" }
-];
+// Default Leaderboard (Starts empty)
+const DEFAULT_LEADERBOARD = [];
 
 // DOM Elements
 const boardEl = document.getElementById("board");
@@ -610,6 +604,20 @@ async function renderLeaderboard(highlightName = null, highlightTime = null) {
   list.sort((a, b) => a.time - b.time);
   leaderboardBody.innerHTML = "";
   const topScores = list.slice(0, 5);
+
+  if (topScores.length === 0) {
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.setAttribute("colspan", "3");
+    td.style.textAlign = "center";
+    td.style.color = "var(--ink-muted)";
+    td.style.fontStyle = "italic";
+    td.style.padding = "16px 0";
+    td.textContent = "No scores submitted yet. Be the first!";
+    tr.appendChild(td);
+    leaderboardBody.appendChild(tr);
+    return;
+  }
 
   topScores.forEach((entry, idx) => {
     const tr = document.createElement("tr");

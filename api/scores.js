@@ -1,13 +1,5 @@
 import { createClient } from 'redis';
 
-const DEFAULT_LEADERBOARD = [
-  { name: "SOCRATES", time: 94 },
-  { name: "PLATO", time: 112 },
-  { name: "DIOTIMA", time: 138 },
-  { name: "SENECA", time: 165 },
-  { name: "GUEST", time: 210 }
-];
-
 let client = null;
 
 async function getRedisClient() {
@@ -27,7 +19,7 @@ export default async function handler(req, res) {
   if (!redisUrl) {
     console.warn("REDIS_URL environment variable is not configured.");
     if (req.method === 'GET') {
-      return res.status(200).json(DEFAULT_LEADERBOARD);
+      return res.status(200).json([]);
     }
     return res.status(200).json({ status: "local_only", message: "Database not configured. Saving locally." });
   }
@@ -46,20 +38,6 @@ export default async function handler(req, res) {
         const time = entry.score;
         return { name, time };
       });
-
-      // Self-seeding: If database is empty, seed default community scores
-      if (scores.length === 0) {
-        const seedEntries = DEFAULT_LEADERBOARD.map((entry, idx) => {
-          const timestamp = Date.now() - (5 - idx) * 1000;
-          return {
-            score: entry.time,
-            value: `${entry.name}:${timestamp}`
-          };
-        });
-
-        await redis.zAdd('leaderboard', seedEntries);
-        return res.status(200).json(DEFAULT_LEADERBOARD);
-      }
 
       return res.status(200).json(scores);
     }
