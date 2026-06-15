@@ -24,6 +24,15 @@ let brandAnimInterval = null;
 let isBrandAnimActive = false;
 let userHasInteracted = false;
 
+// Default Leaderboard (Community benchmarks)
+const DEFAULT_LEADERBOARD = [
+  { name: "SOCRATES", time: 94, date: "Community" },
+  { name: "PLATO", time: 112, date: "Community" },
+  { name: "DIOTIMA", time: 138, date: "Community" },
+  { name: "SENECA", time: 165, date: "Community" },
+  { name: "GUEST", time: 210, date: "Community" }
+];
+
 // DOM Elements
 const boardEl = document.getElementById("board");
 const dragOverlay = document.getElementById("drag-overlay");
@@ -35,6 +44,10 @@ const scoreCounter = document.getElementById("score-counter");
 const timerCounter = document.getElementById("timer-counter");
 const successOverlay = document.getElementById("success-overlay");
 const finalTimeEl = document.getElementById("final-time");
+const leaderboardBody = document.getElementById("leaderboard-body");
+const playerNameInput = document.getElementById("player-name-input");
+const submitScoreBtn = document.getElementById("submit-score-btn");
+const submitScoreContainer = document.getElementById("submit-score-container");
 
 /* ==========================================================================
    1. Word Search Generation Algorithm
@@ -569,8 +582,93 @@ function drawCircleAroundWord(placement, delayMs) {
 }
 
 /* ==========================================================================
-   7. Timer & Progress Management
+   7. Leaderboard Logic (Local Storage)
    ========================================================================== */
+
+function loadLeaderboard() {
+  const localData = localStorage.getItem("tium_leaderboard");
+  if (!localData) {
+    localStorage.setItem("tium_leaderboard", JSON.stringify(DEFAULT_LEADERBOARD));
+    return DEFAULT_LEADERBOARD;
+  }
+  try {
+    return JSON.stringify(JSON.parse(localData)); // Ensure it's parsed correctly
+  } catch (e) {
+    return DEFAULT_LEADERBOARD;
+  }
+}
+
+function getSortedLeaderboard() {
+  const localData = localStorage.getItem("tium_leaderboard");
+  let list = DEFAULT_LEADERBOARD;
+  if (localData) {
+    try {
+      list = JSON.parse(localData);
+    } catch(e) {
+      list = DEFAULT_LEADERBOARD;
+    }
+  }
+  return list.sort((a, b) => a.time - b.time);
+}
+
+function renderLeaderboard(highlightName = null, highlightTime = null) {
+  const list = getSortedLeaderboard();
+  leaderboardBody.innerHTML = "";
+  
+  // Display only top 5 entries
+  const topScores = list.slice(0, 5);
+  
+  topScores.forEach((entry, idx) => {
+    const tr = document.createElement("tr");
+    
+    const rankTd = document.createElement("td");
+    rankTd.className = "rank-cell";
+    rankTd.textContent = idx + 1;
+    
+    const nameTd = document.createElement("td");
+    nameTd.textContent = entry.name;
+    
+    const timeTd = document.createElement("td");
+    timeTd.className = "time-cell";
+    timeTd.textContent = formatTime(entry.time);
+    
+    tr.appendChild(rankTd);
+    tr.appendChild(nameTd);
+    tr.appendChild(timeTd);
+    
+    // Highlight if this is the user's newly submitted score
+    if (highlightName && entry.name === highlightName && entry.time === highlightTime) {
+      tr.style.fontWeight = "bold";
+      tr.style.backgroundColor = "rgba(0, 0, 0, 0.05)";
+    }
+    
+    leaderboardBody.appendChild(tr);
+  });
+}
+
+function saveScore(name, timeSecs) {
+  const currentList = getSortedLeaderboard();
+  const cleanedName = name.trim().toUpperCase() || "GUEST";
+  
+  currentList.push({
+    name: cleanedName,
+    time: timeSecs,
+    date: new Date().toLocaleDateString()
+  });
+  
+  localStorage.setItem("tium_leaderboard", JSON.stringify(currentList));
+  renderLeaderboard(cleanedName, timeSecs);
+}
+
+/* ==========================================================================
+   8. Timer & Progress Management
+   ========================================================================== */
+
+function formatTime(sec) {
+  const min = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${min.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+}
 
 function startTimer() {
   isGameActive = true;
@@ -580,9 +678,7 @@ function startTimer() {
   if (gameTimer) clearInterval(gameTimer);
   gameTimer = setInterval(() => {
     secondsElapsed++;
-    const minutes = Math.floor(secondsElapsed / 60);
-    const seconds = secondsElapsed % 60;
-    timerCounter.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    timerCounter.textContent = formatTime(secondsElapsed);
   }, 1000);
 }
 
@@ -628,13 +724,15 @@ function checkWinCondition() {
     // Show success overlay
     setTimeout(() => {
       finalTimeEl.textContent = timerCounter.textContent;
+      playerNameInput.value = "";
+      submitScoreContainer.style.display = "flex"; // Show input fields
       successOverlay.classList.add("active");
     }, 800);
   }
 }
 
 /* ==========================================================================
-   8. Toolbar Actions (Shuffle, Reset, Solution)
+   9. Toolbar Actions (Shuffle, Reset, Solution)
    ========================================================================== */
 
 function shuffleGame() {
@@ -699,13 +797,14 @@ function toggleSolution() {
 }
 
 /* ==========================================================================
-   9. Initialization & Event Bindings
+   10. Initialization & Event Bindings
    ========================================================================== */
 
 function init() {
   generateGrid();
   renderBoard();
   renderWordBank();
+  renderLeaderboard();
   initPointerEvents();
   startBrandAnimation();
   
@@ -713,6 +812,13 @@ function init() {
   document.getElementById("shuffle-btn").addEventListener("click", shuffleGame);
   document.getElementById("reset-btn").addEventListener("click", resetGame);
   document.getElementById("reveal-btn").addEventListener("click", toggleSolution);
+  
+  // Success overlay score submission
+  submitScoreBtn.onclick = () => {
+    const name = playerNameInput.value.trim() || "GUEST";
+    saveScore(name, secondsElapsed);
+    submitScoreContainer.style.display = "none"; // Hide after save
+  };
   
   // Success overlay buttons
   document.getElementById("play-again-btn").addEventListener("click", () => {

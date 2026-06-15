@@ -37,6 +37,7 @@
   <main class="app-container">
     
     <div class="content-centerer">
+
       <!-- Info Banner (How to Play) -->
       <section class="info-banner" id="info-banner">
         <div class="info-content">
@@ -95,6 +96,25 @@
         </div>
       </section>
 
+      <!-- Leaderboard -->
+      <section class="leaderboard-section">
+        <h2 class="bank-title">Leaderboard</h2>
+        <div class="leaderboard-container">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th class="col-rank">RANK</th>
+                <th class="col-name">PLAYER</th>
+                <th class="col-time">TIME</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+              <!-- Populate dynamically in app.js -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       <!-- Footer Controls & Branding -->
       <footer class="app-footer">
         <p class="branding-footer">TIUM_ · A Thinking Medium</p>
@@ -114,11 +134,19 @@
       </span>
       <h2>Pause Complete</h2>
       <p>You found all 10 concepts in <span id="final-time">00:00</span>!</p>
+      
+      <!-- Leaderboard Submission -->
+      <div class="submit-score-container">
+        <label for="player-name-input" class="submit-label">Save your time to the leaderboard:</label>
+        <input type="text" id="player-name-input" placeholder="Enter your name" maxlength="12">
+        <button id="submit-score-btn" class="btn btn-primary" style="margin-top: 6px;">Submit Score</button>
+      </div>
+
       <div class="success-stats">
         <p class="success-quote">"Philosophy begins in wonder, and a thinking medium cultivates it."</p>
       </div>
       <div class="success-actions">
-        <button id="play-again-btn" class="btn btn-primary">Play Again</button>
+        <button id="play-again-btn" class="btn btn-secondary">Play Again</button>
         <button id="close-success-btn" class="btn btn-secondary">Close</button>
       </div>
     </div>
