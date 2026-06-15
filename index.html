@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=no">
+  <title>TIUM_ | Word Hunt</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="An interactive, minimalist word search experience by TIUM_ | A Thinking Medium. Explore our philosophy, the third place, and thoughts.">
+  <meta name="keywords" content="TIUM, A Thinking Medium, Word Hunt, Word Search, Puzzle, Interactive, Third Place">
+  <meta name="author" content="TIUM_">
+  <meta property="og:title" content="TIUM_ | Word Hunt">
+  <meta property="og:description" content="Explore TIUM's philosophy through our interactive, minimalist word search puzzle.">
+  <meta property="og:image" content="assets/tium-logo.png">
+  <meta property="og:type" content="website">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,300;9..144,0,400;9..144,0,500;9..144,0,700;9..144,0,900;9..144,1,400&family=Outfit:wght@300;400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
+</head>
+<body>
+
+  <!-- Game Container -->
+  <main class="app-container">
+    
+    <!-- Branding Header -->
+    <header class="brand-header">
+      <div class="logo-wrapper">
+        <img class="tium-logo" src="assets/tium-logo.png" alt="TIUM_ Logo">
+      </div>
+      <h1 class="brand-title">Word Hunt</h1>
+      <p class="brand-tagline">a cognitive pause — find the concepts that shape us</p>
+    </header>
+
+    <!-- Info Banner (How to Play) -->
+    <section class="info-banner" id="info-banner">
+      <div class="info-content">
+        <span class="info-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </span>
+        <p>Drag or swipe across letters to highlight words. They run in all directions (horizontal, vertical, diagonal, and backwards).</p>
+      </div>
+      <button class="close-banner-btn" aria-label="Close instructions" onclick="document.getElementById('info-banner').classList.add('hidden')">×</button>
+    </section>
+
+    <!-- Stats & Controls Bar -->
+    <section class="game-dashboard">
+      <div class="stat-item">
+        <span class="stat-label">FOUND</span>
+        <span class="stat-value" id="score-counter">0/10</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">TIME</span>
+        <span class="stat-value" id="timer-counter">00:00</span>
+      </div>
+      <div class="dashboard-controls">
+        <button id="shuffle-btn" class="btn btn-secondary" title="Generate a new random grid">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+          Shuffle
+        </button>
+        <button id="reset-btn" class="btn btn-secondary" title="Reset current progress">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          Reset
+        </button>
+      </div>
+    </section>
+
+    <!-- The Play Board Wrapper -->
+    <section class="board-wrapper">
+      <div class="hex-decor tl"></div>
+      <div class="hex-decor tr"></div>
+      <div class="hex-decor bl"></div>
+      <div class="hex-decor br"></div>
+      
+      <!-- Interactive Grid -->
+      <div class="grid-container" id="grid-container">
+        <div class="board" id="board">
+          <!-- Dynamic cells will be generated here by app.js -->
+        </div>
+
+        <!-- SVG overlays for highlighting -->
+        <svg class="grid-overlay" id="drag-overlay" pointer-events="none"></svg>
+        <svg class="grid-overlay" id="found-overlay" pointer-events="none"></svg>
+        <svg class="grid-overlay" id="circle-overlay" pointer-events="none"></svg>
+      </div>
+    </section>
+
+    <!-- Word Bank -->
+    <section class="word-bank-section">
+      <h2 class="bank-title">Word Bank</h2>
+      <div class="word-bank" id="word-bank">
+        <!-- Words will be dynamically listed here -->
+      </div>
+    </section>
+
+    <!-- Footer Controls & Branding -->
+    <footer class="app-footer">
+      <p class="branding-footer">TIUM_ · A Thinking Medium</p>
+      <div class="footer-actions">
+        <button id="reveal-btn" class="btn btn-tertiary">Show Solution</button>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- Success Modal Overlay -->
+  <div class="success-overlay" id="success-overlay">
+    <div class="success-card">
+      <span class="success-badge">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </span>
+      <h2>Pause Complete</h2>
+      <p>You found all 10 concepts in <span id="final-time">00:00</span>!</p>
+      <div class="success-stats">
+        <p class="success-quote">"Philosophy begins in wonder, and a thinking medium cultivates it."</p>
+      </div>
+      <div class="success-actions">
+        <button id="play-again-btn" class="btn btn-primary">Play Again</button>
+        <button id="close-success-btn" class="btn btn-secondary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
