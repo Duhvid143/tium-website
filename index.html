@@ -26,86 +26,86 @@
 </head>
 <body>
 
-  <!-- Game Container -->
+  <!-- Brand Header (Floating/Absolute top left on desktop) -->
+  <header class="brand-header">
+    <div class="logo-wrapper">
+      <img class="tium-logo" src="assets/tium-logo.png" alt="TIUM_ Logo">
+    </div>
+  </header>
+
+  <!-- Game Container (Centered) -->
   <main class="app-container">
     
-    <!-- Branding Header -->
-    <header class="brand-header">
-      <div class="logo-wrapper">
-        <img class="tium-logo" src="assets/tium-logo.png" alt="TIUM_ Logo">
-      </div>
+    <div class="content-centerer">
       <h1 class="brand-title">Word Hunt</h1>
       <p class="brand-tagline">a cognitive pause — find the concepts that shape us</p>
-    </header>
 
-    <!-- Info Banner (How to Play) -->
-    <section class="info-banner" id="info-banner">
-      <div class="info-content">
-        <span class="info-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        </span>
-        <p>Drag or swipe across letters to highlight words. They run in all directions (horizontal, vertical, diagonal, and backwards).</p>
-      </div>
-      <button class="close-banner-btn" aria-label="Close instructions" onclick="document.getElementById('info-banner').classList.add('hidden')">×</button>
-    </section>
-
-    <!-- Stats & Controls Bar -->
-    <section class="game-dashboard">
-      <div class="stat-item">
-        <span class="stat-label">FOUND</span>
-        <span class="stat-value" id="score-counter">0/10</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-label">TIME</span>
-        <span class="stat-value" id="timer-counter">00:00</span>
-      </div>
-      <div class="dashboard-controls">
-        <button id="shuffle-btn" class="btn btn-secondary" title="Generate a new random grid">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-          Shuffle
-        </button>
-        <button id="reset-btn" class="btn btn-secondary" title="Reset current progress">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-          Reset
-        </button>
-      </div>
-    </section>
-
-    <!-- The Play Board Wrapper -->
-    <section class="board-wrapper">
-      <div class="hex-decor tl"></div>
-      <div class="hex-decor tr"></div>
-      <div class="hex-decor bl"></div>
-      <div class="hex-decor br"></div>
-      
-      <!-- Interactive Grid -->
-      <div class="grid-container" id="grid-container">
-        <div class="board" id="board">
-          <!-- Dynamic cells will be generated here by app.js -->
+      <!-- Info Banner (How to Play) -->
+      <section class="info-banner" id="info-banner">
+        <div class="info-content">
+          <span class="info-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </span>
+          <p>Drag across letters to highlight words. They run in all directions (horizontal, vertical, diagonal, and backwards).</p>
         </div>
+        <button class="close-banner-btn" aria-label="Close instructions" onclick="document.getElementById('info-banner').classList.add('hidden')">×</button>
+      </section>
 
-        <!-- SVG overlays for highlighting -->
-        <svg class="grid-overlay" id="drag-overlay" pointer-events="none"></svg>
-        <svg class="grid-overlay" id="found-overlay" pointer-events="none"></svg>
-        <svg class="grid-overlay" id="circle-overlay" pointer-events="none"></svg>
-      </div>
-    </section>
+      <!-- Stats & Controls Bar -->
+      <section class="game-dashboard">
+        <div class="stats-group">
+          <div class="stat-item">
+            <span class="stat-label">FOUND</span>
+            <span class="stat-value" id="score-counter">0/10</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">TIME</span>
+            <span class="stat-value" id="timer-counter">00:00</span>
+          </div>
+        </div>
+        <div class="dashboard-controls">
+          <button id="shuffle-btn" class="btn btn-secondary" title="Generate a new random grid">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+            Shuffle
+          </button>
+          <button id="reset-btn" class="btn btn-secondary" title="Reset current progress">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            Reset
+          </button>
+        </div>
+      </section>
 
-    <!-- Word Bank -->
-    <section class="word-bank-section">
-      <h2 class="bank-title">Word Bank</h2>
-      <div class="word-bank" id="word-bank">
-        <!-- Words will be dynamically listed here -->
-      </div>
-    </section>
+      <!-- The Play Board Wrapper (Border-free) -->
+      <section class="board-wrapper">
+        <!-- Interactive Grid -->
+        <div class="grid-container" id="grid-container">
+          <div class="board" id="board">
+            <!-- Dynamic cells will be generated here by app.js -->
+          </div>
 
-    <!-- Footer Controls & Branding -->
-    <footer class="app-footer">
-      <p class="branding-footer">TIUM_ · A Thinking Medium</p>
-      <div class="footer-actions">
-        <button id="reveal-btn" class="btn btn-tertiary">Show Solution</button>
-      </div>
-    </footer>
+          <!-- SVG overlays for highlighting -->
+          <svg class="grid-overlay" id="drag-overlay" pointer-events="none"></svg>
+          <svg class="grid-overlay" id="found-overlay" pointer-events="none"></svg>
+          <svg class="grid-overlay" id="circle-overlay" pointer-events="none"></svg>
+        </div>
+      </section>
+
+      <!-- Word Bank -->
+      <section class="word-bank-section">
+        <h2 class="bank-title">Word Bank</h2>
+        <div class="word-bank" id="word-bank">
+          <!-- Words will be dynamically listed here -->
+        </div>
+      </section>
+
+      <!-- Footer Controls & Branding -->
+      <footer class="app-footer">
+        <p class="branding-footer">TIUM_ · A Thinking Medium</p>
+        <div class="footer-actions">
+          <button id="reveal-btn" class="btn btn-tertiary">Show Solution</button>
+        </div>
+      </footer>
+    </div>
 
   </main>
 

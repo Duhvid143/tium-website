@@ -399,9 +399,9 @@ function validateSelection() {
           // Add a subtle pop bounce animation
           el.animate([
             { transform: 'scale(1)' },
-            { transform: 'scale(1.15)', color: 'var(--clay)' },
+            { transform: 'scale(1.12)' },
             { transform: 'scale(1)' }
-          ], { duration: 300, easing: 'ease-out' });
+          ], { duration: 250, easing: 'ease-out' });
         }
       });
       
@@ -422,7 +422,7 @@ function validateSelection() {
 }
 
 /* ==========================================================================
-   5. Dynamic SVG Highlights and Render Math
+   5. Dynamic SVG Capsule / Oval Drawing Engine
    ========================================================================== */
 
 function getCellCenter(r, c) {
@@ -440,6 +440,43 @@ function getCellCenter(r, c) {
   };
 }
 
+/**
+ * Creates a mathematically perfect rounded rectangle (capsule/oval)
+ * wrapping from (x1, y1) to (x2, y2).
+ */
+function createCapsule(x1, y1, x2, y2, cellWidth, isAnim = false) {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const length = Math.hypot(dx, dy);
+  const angle = Math.atan2(dy, dx);
+  const angleDeg = (angle * 180) / Math.PI;
+  const rad = cellWidth / 2 - 2; // tight outline around letters
+
+  const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  g.setAttribute("transform", `translate(${x1}, ${y1}) rotate(${angleDeg})`);
+
+  const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  rect.setAttribute("x", -rad);
+  rect.setAttribute("y", -rad);
+  rect.setAttribute("width", length + 2 * rad);
+  rect.setAttribute("height", 2 * rad);
+  rect.setAttribute("rx", rad);
+  rect.setAttribute("ry", rad);
+  rect.setAttribute("fill", "none");
+  rect.setAttribute("stroke", "#000000");
+  rect.setAttribute("stroke-width", "1.5");
+
+  if (isAnim) {
+    rect.setAttribute("class", "brand-highlight-path animate-circle");
+    const perimeter = 2 * length + 2 * Math.PI * rad;
+    rect.style.strokeDasharray = perimeter;
+    rect.style.strokeDashoffset = perimeter;
+  }
+
+  g.appendChild(rect);
+  return g;
+}
+
 function updateDragOverlay() {
   clearDragOverlay();
   if (selectedCells.length < 2) return;
@@ -450,14 +487,10 @@ function updateDragOverlay() {
   const p1 = getCellCenter(start.r, start.c);
   const p2 = getCellCenter(end.r, end.c);
   
-  const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-  line.setAttribute("x1", p1.x);
-  line.setAttribute("y1", p1.y);
-  line.setAttribute("x2", p2.x);
-  line.setAttribute("y2", p2.y);
-  line.setAttribute("class", "drag-line");
+  const g = createCapsule(p1.x, p1.y, p2.x, p2.y, p1.width);
+  g.querySelector("rect").setAttribute("class", "drag-line");
   
-  dragOverlay.appendChild(line);
+  dragOverlay.appendChild(g);
 }
 
 function clearDragOverlay() {
@@ -473,14 +506,10 @@ function updateFoundWordOverlays() {
     const p1 = getCellCenter(placement.start.r, placement.start.c);
     const p2 = getCellCenter(placement.end.r, placement.end.c);
     
-    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line.setAttribute("x1", p1.x);
-    line.setAttribute("y1", p1.y);
-    line.setAttribute("x2", p2.x);
-    line.setAttribute("y2", p2.y);
-    line.setAttribute("class", "found-line");
+    const g = createCapsule(p1.x, p1.y, p2.x, p2.y, p1.width);
+    g.querySelector("rect").setAttribute("class", "found-line");
     
-    foundOverlay.appendChild(line);
+    foundOverlay.appendChild(g);
   });
 }
 
@@ -534,32 +563,8 @@ function drawCircleAroundWord(placement, delayMs) {
     const p1 = getCellCenter(placement.start.r, placement.start.c);
     const p2 = getCellCenter(placement.end.r, placement.end.c);
     
-    const dx = p2.x - p1.x;
-    const dy = p2.y - p1.y;
-    const length = Math.hypot(dx, dy);
-    const angle = Math.atan2(dy, dx);
-    const angleDeg = (angle * 180) / Math.PI;
-    
-    // Build a capsule path around the segment from 0 to length
-    // Padding radius is cell width / 2 + 3px padding
-    const rad = p1.width / 2 + 3;
-    
-    const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    group.setAttribute("transform", `translate(${p1.x}, ${p1.y}) rotate(${angleDeg})`);
-    
-    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    const dString = `M ${-rad + 4} ${-rad} L ${length + rad - 4} ${-rad} A ${rad} ${rad} 0 0 1 ${length + rad} 0 A ${rad} ${rad} 0 0 1 ${length + rad - 4} ${rad} L ${-rad + 4} ${rad} A ${rad} ${rad} 0 0 1 ${-rad} 0 A ${rad} ${rad} 0 0 1 ${-rad + 4} ${-rad} Z`;
-    
-    path.setAttribute("d", dString);
-    path.setAttribute("class", "brand-highlight-path animate-circle");
-    
-    // Set stroke dash length dynamically to match computed path length
-    const totalLength = 2 * length + 2 * Math.PI * rad;
-    path.style.strokeDasharray = totalLength;
-    path.style.strokeDashoffset = totalLength;
-    
-    group.appendChild(path);
-    circleOverlay.appendChild(group);
+    const g = createCapsule(p1.x, p1.y, p2.x, p2.y, p1.width, true);
+    circleOverlay.appendChild(g);
   }, delayMs);
 }
 
@@ -604,14 +609,14 @@ function checkWinCondition() {
           angle: 60,
           spread: 55,
           origin: { x: 0 },
-          colors: ['#a8472f', '#201a15', '#dfd0b2']
+          colors: ['#000000', '#555555', '#aaaaaa']
         });
         confetti({
           particleCount: 3,
           angle: 120,
           spread: 55,
           origin: { x: 1 },
-          colors: ['#a8472f', '#201a15', '#dfd0b2']
+          colors: ['#000000', '#555555', '#aaaaaa']
         });
         
         if (Date.now() < end) {
