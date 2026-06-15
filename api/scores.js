@@ -22,6 +22,7 @@ export default async function handler(req, res) {
         token = match[2];
         const host = match[3];
         url = `https://${host}`;
+        console.log("REDIS_URL host:", host);
       }
     }
   }
