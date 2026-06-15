@@ -721,6 +721,9 @@ function init() {
   // Resizing events to adjust overlays
   window.addEventListener("resize", () => {
     updateFoundWordOverlays();
+    if (isBrandAnimActive && !userHasInteracted) {
+      triggerBrandCircle();
+    }
   });
 }
 
