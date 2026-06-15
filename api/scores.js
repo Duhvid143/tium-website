@@ -1,5 +1,4 @@
-// TIUM_ Word Hunt - Serverless Leaderboard API
-// Powered by Vercel KV (Redis REST API)
+import { createClient } from 'redis';
 
 const DEFAULT_LEADERBOARD = [
   { name: "SOCRATES", time: 94 },
@@ -9,27 +8,24 @@ const DEFAULT_LEADERBOARD = [
   { name: "GUEST", time: 210 }
 ];
 
-export default async function handler(req, res) {
-  let url = process.env.KV_REST_API_URL;
-  let token = process.env.KV_REST_API_TOKEN;
+let client = null;
 
-  // Support REDIS_URL (which standard Redis / Upstash integrations provide)
-  if (!url || !token) {
-    const redisUrl = process.env.REDIS_URL;
-    if (redisUrl) {
-      const match = redisUrl.match(/^rediss?:\/\/(?:([^:]*):)?([^@]+)@([^:]+)(?::(\d+))?$/);
-      if (match) {
-        token = match[2];
-        const host = match[3];
-        url = `https://${host}`;
-        console.log("REDIS_URL host:", host);
-      }
-    }
+async function getRedisClient() {
+  if (!client) {
+    client = createClient({
+      url: process.env.REDIS_URL
+    });
+    client.on('error', (err) => console.error('Redis Client Error', err));
+    await client.connect();
   }
+  return client;
+}
 
-  if (!url || !token) {
-    // Fallback if database environment variables are not available
-    console.warn("Database environment variables are not configured.");
+export default async function handler(req, res) {
+  const redisUrl = process.env.REDIS_URL;
+
+  if (!redisUrl) {
+    console.warn("REDIS_URL environment variable is not configured.");
     if (req.method === 'GET') {
       return res.status(200).json(DEFAULT_LEADERBOARD);
     }
@@ -37,53 +33,31 @@ export default async function handler(req, res) {
   }
 
   try {
+    const redis = await getRedisClient();
+
     // ----------------------------------------------------------------------
     // GET: Fetch top 5 sorted scores
     // ----------------------------------------------------------------------
     if (req.method === 'GET') {
-      const response = await fetch(`${url}/`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(["ZRANGE", "leaderboard", 0, 4, "WITHSCORES"])
+      const raw = await redis.zRangeWithScores('leaderboard', 0, 4);
+
+      const scores = raw.map(entry => {
+        const name = entry.value.split(":")[0];
+        const time = entry.score;
+        return { name, time };
       });
-
-      const data = await response.json();
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
-      const raw = data.result || [];
-      const scores = [];
-
-      // Parse Redis response: flat array of [member, score, member, score, ...]
-      for (let i = 0; i < raw.length; i += 2) {
-        const member = raw[i];
-        const time = parseInt(raw[i + 1], 10);
-        const name = member.split(":")[0];
-        scores.push({ name, time });
-      }
 
       // Self-seeding: If database is empty, seed default community scores
       if (scores.length === 0) {
-        const pipeline = DEFAULT_LEADERBOARD.map((entry, idx) => {
-          // Space out timestamps slightly to ensure stable ordering
+        const seedEntries = DEFAULT_LEADERBOARD.map((entry, idx) => {
           const timestamp = Date.now() - (5 - idx) * 1000;
-          return ["ZADD", "leaderboard", entry.time, `${entry.name}:${timestamp}`];
+          return {
+            score: entry.time,
+            value: `${entry.name}:${timestamp}`
+          };
         });
 
-        // Run pipeline seed on Upstash KV
-        await fetch(`${url}/pipeline`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(pipeline)
-        });
-
+        await redis.zAdd('leaderboard', seedEntries);
         return res.status(200).json(DEFAULT_LEADERBOARD);
       }
 
@@ -103,21 +77,12 @@ export default async function handler(req, res) {
       // Sanitize input: Alphanumeric only, uppercase, max 12 characters
       const sanitizedName = name.trim().replace(/[^a-zA-Z0-9 ]/g, '').toUpperCase().substring(0, 12) || "GUEST";
       const timestamp = Date.now();
+      const member = `${sanitizedName}:${timestamp}`;
 
-      // ZADD leaderboard <time> "<name>:<timestamp>"
-      const response = await fetch(`${url}/`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(["ZADD", "leaderboard", time, `${sanitizedName}:${timestamp}`])
+      await redis.zAdd('leaderboard', {
+        score: time,
+        value: member
       });
-
-      const data = await response.json();
-      if (data.error) {
-        throw new Error(data.error);
-      }
 
       return res.status(200).json({ status: "success", name: sanitizedName, time });
     }
