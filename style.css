@@ -40,8 +40,9 @@ html, body {
 
 body {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   padding: 48px 24px;
 }
 
@@ -290,11 +291,12 @@ body {
 .cell {
   font-family: var(--font-mono);
   font-weight: 500;
-  font-size: clamp(13px, 2.5vw, 22px);
+  font-size: clamp(11px, 3.2vw, 22px);
   color: var(--ink);
   display: flex;
   align-items: center;
   justify-content: center;
+  line-height: 1;
   border: none;
   cursor: pointer;
   position: relative;
