@@ -10,16 +10,29 @@ const DEFAULT_LEADERBOARD = [
 ];
 
 export default async function handler(req, res) {
-  const url = process.env.KV_REST_API_URL;
-  const token = process.env.KV_REST_API_TOKEN;
+  let url = process.env.KV_REST_API_URL;
+  let token = process.env.KV_REST_API_TOKEN;
+
+  // Support REDIS_URL (which standard Redis / Upstash integrations provide)
+  if (!url || !token) {
+    const redisUrl = process.env.REDIS_URL;
+    if (redisUrl) {
+      const match = redisUrl.match(/^rediss?:\/\/(?:([^:]*):)?([^@]+)@([^:]+)(?::(\d+))?$/);
+      if (match) {
+        token = match[2];
+        const host = match[3];
+        url = `https://${host}`;
+      }
+    }
+  }
 
   if (!url || !token) {
-    // Fallback if KV database is not yet linked in Vercel dashboard
-    console.warn("Vercel KV environment variables are not configured.");
+    // Fallback if database environment variables are not available
+    console.warn("Database environment variables are not configured.");
     if (req.method === 'GET') {
       return res.status(200).json(DEFAULT_LEADERBOARD);
     }
-    return res.status(200).json({ status: "local_only", message: "KV store not configured. Saving locally." });
+    return res.status(200).json({ status: "local_only", message: "Database not configured. Saving locally." });
   }
 
   try {
