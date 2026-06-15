@@ -582,82 +582,94 @@ function drawCircleAroundWord(placement, delayMs) {
 }
 
 /* ==========================================================================
-   7. Leaderboard Logic (Local Storage)
+   7. Leaderboard Logic (Vercel Serverless API + Local Storage fallback)
    ========================================================================== */
 
-function loadLeaderboard() {
-  const localData = localStorage.getItem("tium_leaderboard");
-  if (!localData) {
-    localStorage.setItem("tium_leaderboard", JSON.stringify(DEFAULT_LEADERBOARD));
-    return DEFAULT_LEADERBOARD;
-  }
+async function renderLeaderboard(highlightName = null, highlightTime = null) {
+  let list = [];
   try {
-    return JSON.stringify(JSON.parse(localData)); // Ensure it's parsed correctly
+    const res = await fetch("/api/scores");
+    if (!res.ok) throw new Error("API failed");
+    list = await res.json();
   } catch (e) {
-    return DEFAULT_LEADERBOARD;
-  }
-}
-
-function getSortedLeaderboard() {
-  const localData = localStorage.getItem("tium_leaderboard");
-  let list = DEFAULT_LEADERBOARD;
-  if (localData) {
-    try {
-      list = JSON.parse(localData);
-    } catch(e) {
+    console.warn("Could not fetch global leaderboard, falling back to local storage:", e);
+    // Fallback: load local scores
+    const localData = localStorage.getItem("tium_leaderboard");
+    if (localData) {
+      try {
+        list = JSON.parse(localData);
+      } catch (err) {
+        list = DEFAULT_LEADERBOARD;
+      }
+    } else {
       list = DEFAULT_LEADERBOARD;
     }
   }
-  return list.sort((a, b) => a.time - b.time);
-}
 
-function renderLeaderboard(highlightName = null, highlightTime = null) {
-  const list = getSortedLeaderboard();
+  // Sort and display top 5
+  list.sort((a, b) => a.time - b.time);
   leaderboardBody.innerHTML = "";
-  
-  // Display only top 5 entries
   const topScores = list.slice(0, 5);
-  
+
   topScores.forEach((entry, idx) => {
     const tr = document.createElement("tr");
-    
+
     const rankTd = document.createElement("td");
     rankTd.className = "rank-cell";
     rankTd.textContent = idx + 1;
-    
+
     const nameTd = document.createElement("td");
     nameTd.textContent = entry.name;
-    
+
     const timeTd = document.createElement("td");
     timeTd.className = "time-cell";
     timeTd.textContent = formatTime(entry.time);
-    
+
     tr.appendChild(rankTd);
     tr.appendChild(nameTd);
     tr.appendChild(timeTd);
-    
-    // Highlight if this is the user's newly submitted score
+
     if (highlightName && entry.name === highlightName && entry.time === highlightTime) {
       tr.style.fontWeight = "bold";
       tr.style.backgroundColor = "rgba(0, 0, 0, 0.05)";
     }
-    
+
     leaderboardBody.appendChild(tr);
   });
 }
 
-function saveScore(name, timeSecs) {
-  const currentList = getSortedLeaderboard();
+async function saveScore(name, timeSecs) {
   const cleanedName = name.trim().toUpperCase() || "GUEST";
   
-  currentList.push({
-    name: cleanedName,
-    time: timeSecs,
-    date: new Date().toLocaleDateString()
-  });
-  
-  localStorage.setItem("tium_leaderboard", JSON.stringify(currentList));
-  renderLeaderboard(cleanedName, timeSecs);
+  // 1. Save local backup copy in localStorage
+  try {
+    const localData = localStorage.getItem("tium_leaderboard");
+    let localList = localData ? JSON.parse(localData) : [...DEFAULT_LEADERBOARD];
+    localList.push({ name: cleanedName, time: timeSecs, date: new Date().toLocaleDateString() });
+    localStorage.setItem("tium_leaderboard", JSON.stringify(localList));
+  } catch (e) {
+    console.error("Failed to write to local storage:", e);
+  }
+
+  // 2. POST to the global database API
+  try {
+    const response = await fetch("/api/scores", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ name: cleanedName, time: timeSecs })
+    });
+    
+    if (!response.ok) throw new Error("POST failed");
+    
+    // Refresh the leaderboard showing the global ranking, highlighting the new entry
+    renderLeaderboard(cleanedName, timeSecs);
+  } catch (e) {
+    console.error("Could not sync score to global leaderboard:", e);
+    // Refresh using local scores instead
+    renderLeaderboard(cleanedName, timeSecs);
+  }
 }
 
 /* ==========================================================================
