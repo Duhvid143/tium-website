@@ -73,47 +73,55 @@
         </div>
       </section>
 
-      <!-- The Play Board Wrapper (Border-free) -->
-      <section class="board-wrapper">
-        <!-- Interactive Grid -->
-        <div class="grid-container" id="grid-container">
-          <div class="board" id="board">
-            <!-- Dynamic cells will be generated here by app.js -->
+      <!-- Main Game Body Layout -->
+      <div class="game-body">
+
+        <!-- Left Column: The Play Board Wrapper (Border-free) -->
+        <section class="board-wrapper">
+          <!-- Interactive Grid -->
+          <div class="grid-container" id="grid-container">
+            <div class="board" id="board">
+              <!-- Dynamic cells will be generated here by app.js -->
+            </div>
+
+            <!-- SVG overlays for highlighting -->
+            <svg class="grid-overlay" id="drag-overlay" pointer-events="none"></svg>
+            <svg class="grid-overlay" id="found-overlay" pointer-events="none"></svg>
+            <svg class="grid-overlay" id="circle-overlay" pointer-events="none"></svg>
           </div>
+        </section>
 
-          <!-- SVG overlays for highlighting -->
-          <svg class="grid-overlay" id="drag-overlay" pointer-events="none"></svg>
-          <svg class="grid-overlay" id="found-overlay" pointer-events="none"></svg>
-          <svg class="grid-overlay" id="circle-overlay" pointer-events="none"></svg>
-        </div>
-      </section>
+        <!-- Right Column: Sidebar (Word Bank & Leaderboard) -->
+        <div class="sidebar-wrapper">
+          <!-- Word Bank -->
+          <section class="word-bank-section">
+            <h2 class="bank-title">Word Bank</h2>
+            <div class="word-bank" id="word-bank">
+              <!-- Words will be dynamically listed here -->
+            </div>
+          </section>
 
-      <!-- Word Bank -->
-      <section class="word-bank-section">
-        <h2 class="bank-title">Word Bank</h2>
-        <div class="word-bank" id="word-bank">
-          <!-- Words will be dynamically listed here -->
+          <!-- Leaderboard -->
+          <section class="leaderboard-section">
+            <h2 class="bank-title">Leaderboard</h2>
+            <div class="leaderboard-container">
+              <table class="leaderboard-table">
+                <thead>
+                  <tr>
+                    <th class="col-rank">RANK</th>
+                    <th class="col-name">PLAYER</th>
+                    <th class="col-time">TIME</th>
+                  </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                  <!-- Populate dynamically in app.js -->
+                </tbody>
+              </table>
+            </div>
+          </section>
         </div>
-      </section>
 
-      <!-- Leaderboard -->
-      <section class="leaderboard-section">
-        <h2 class="bank-title">Leaderboard</h2>
-        <div class="leaderboard-container">
-          <table class="leaderboard-table">
-            <thead>
-              <tr>
-                <th class="col-rank">RANK</th>
-                <th class="col-name">PLAYER</th>
-                <th class="col-time">TIME</th>
-              </tr>
-            </thead>
-            <tbody id="leaderboard-body">
-              <!-- Populate dynamically in app.js -->
-            </tbody>
-          </table>
-        </div>
-      </section>
+      </div>
 
       <!-- Footer Controls & Branding -->
       <footer class="app-footer">
