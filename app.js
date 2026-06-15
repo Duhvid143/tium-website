@@ -592,6 +592,9 @@ async function renderLeaderboard(highlightName = null, highlightTime = null) {
     if (localData) {
       try {
         list = JSON.parse(localData);
+        // Clean any residual placeholder names from local storage fallback
+        const placeholders = ["SOCRATES", "PLATO", "DIOTIMA", "SENECA"];
+        list = list.filter(entry => !placeholders.includes(entry.name.toUpperCase()));
       } catch (err) {
         list = DEFAULT_LEADERBOARD;
       }
@@ -653,6 +656,9 @@ async function saveScore(name, timeSecs) {
   try {
     const localData = localStorage.getItem("tium_leaderboard");
     let localList = localData ? JSON.parse(localData) : [...DEFAULT_LEADERBOARD];
+    // Clean placeholders
+    const placeholders = ["SOCRATES", "PLATO", "DIOTIMA", "SENECA"];
+    localList = localList.filter(entry => !placeholders.includes(entry.name.toUpperCase()));
     localList.push({ name: cleanedName, time: timeSecs, date: new Date().toLocaleDateString() });
     localStorage.setItem("tium_leaderboard", JSON.stringify(localList));
   } catch (e) {
