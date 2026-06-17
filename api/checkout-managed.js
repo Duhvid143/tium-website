@@ -29,6 +29,10 @@ export default async function handler(req, res) {
 
   const stripe = new Stripe(stripeSecret);
 
+  const protocol = req.headers['x-forwarded-proto'] || 'https';
+  const host = req.headers.host;
+  const origin = req.headers.origin || `${protocol}://${host}`;
+
   try {
     const session = await stripe.checkout.sessions.create({
       line_items: [
@@ -38,8 +42,8 @@ export default async function handler(req, res) {
         },
       ],
       mode: 'payment',
-      success_url: `${req.headers.origin}/shop.html?success=true`,
-      cancel_url: `${req.headers.origin}/shop.html`,
+      success_url: `${origin}/shop.html?success=true`,
+      cancel_url: `${origin}/shop.html`,
       managed_payments: {
         enabled: true
       }

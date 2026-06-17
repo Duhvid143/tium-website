@@ -78,6 +78,10 @@ export default async function handler(req, res) {
     }
   }
 
+  const protocol = req.headers['x-forwarded-proto'] || 'https';
+  const host = req.headers.host;
+  const origin = req.headers.origin || `${protocol}://${host}`;
+
   try {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -88,8 +92,8 @@ export default async function handler(req, res) {
         },
       ],
       mode: 'payment',
-      success_url: `${req.headers.origin}/shop.html?success=true`,
-      cancel_url: `${req.headers.origin}/shop.html`,
+      success_url: `${origin}/shop.html?success=true`,
+      cancel_url: `${origin}/shop.html`,
       shipping_address_collection: {
         allowed_countries: ['US', 'CA', 'GB', 'AU', 'NZ', 'FR', 'DE', 'IT', 'ES', 'NL', 'SE'],
       },
