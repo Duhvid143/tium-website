@@ -98,13 +98,12 @@ export default async function handler(req, res) {
       success_url: `${origin}/shop.html?success=true`,
       cancel_url: `${origin}/shop.html`,
       shipping_address_collection: {
-        allowed_countries: ['US', 'CA', 'GB', 'AU', 'NZ', 'FR', 'DE', 'IT', 'ES', 'NL', 'SE'],
+        allowed_countries: ['US'], // Restrict address collection to United States only
       },
       billing_address_collection: 'required',
-      shipping_options: (process.env.SHIPPING_RATE_US || process.env.SHIPPING_RATE_INT)
+      shipping_options: process.env.SHIPPING_RATE_US
         ? [
-            ...(process.env.SHIPPING_RATE_US ? [{ shipping_rate: process.env.SHIPPING_RATE_US }] : []),
-            ...(process.env.SHIPPING_RATE_INT ? [{ shipping_rate: process.env.SHIPPING_RATE_INT }] : []),
+            { shipping_rate: process.env.SHIPPING_RATE_US },
           ]
         : [
             {
