@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=no">
+  <title>Shop | TIUM_ | A Thinking Medium</title>
+  
+  <!-- Favicon & Web App Manifest -->
+  <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-title" content="TIUM_" />
+  <link rel="manifest" href="site.webmanifest" />
+
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Shop the custom TIUM_ Word Search Tee. High-quality heavy-weight organic cotton featuring a solvable minimalist word search puzzle.">
+  <meta name="keywords" content="TIUM, A Thinking Medium, Shop, Apparel, Word Search Shirt, Minimalist Fashion">
+  <meta name="author" content="TIUM_">
+  <meta property="og:title" content="Shop | TIUM_ | A Thinking Medium">
+  <meta property="og:description" content="Get the custom TIUM_ Word Search Tee. Minimalist design, heavy-weight organic cotton.">
+  <meta property="og:image" content="assets/tium-shirt.jpg">
+  <meta property="og:type" content="website">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
+
+  <!-- Vercel Web Analytics -->
+  <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
+
+  <!-- Vercel Speed Insights -->
+  <script>
+    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+</head>
+<body class="shop-page">
+
+  <!-- Brand Header -->
+  <header class="brand-header">
+    <div class="header-logo-nav">
+      <div class="logo-wrapper">
+        <a href="index.html" aria-label="TIUM_ Home">
+          <img class="tium-logo" src="assets/tium-logo.png" alt="TIUM_ Logo">
+        </a>
+      </div>
+      <nav class="header-nav" aria-label="Main Navigation">
+        <a href="index.html" class="nav-item">Puzzle</a>
+        <a href="shop.html" class="nav-item active">Shop</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Shop Container -->
+  <main class="app-container">
+    <div class="shop-grid">
+      
+      <!-- Left Column: Product Image -->
+      <section class="shop-gallery" aria-label="Product Images">
+        <div class="main-image-container">
+          <img id="product-main-image" src="assets/tium-shirt.jpg" alt="TIUM_ Word Search Tee - Front & Back Design" class="product-image">
+        </div>
+      </section>
+
+      <!-- Right Column: Product Info & Buy/Waitlist Box -->
+      <section class="shop-info" aria-label="Product Order Form">
+        <div class="product-header">
+          <h1 class="product-title">TT-01</h1>
+          <div class="product-price" id="product-price">$35.00</div>
+        </div>
+
+        <hr class="product-divider">
+
+        <div class="product-details">
+          <p class="description-lead">The thinking medium's first garment. Designed as an extension of the TIUM_ philosophy—a physical container for play, reflection, and minimal aesthetics.</p>
+          
+          <ul class="product-specs">
+            <li><strong>Design:</strong> Front features the wordmark "A Thinking Medium". Back features a full, solvable 12x12 word search grid.</li>
+            <li><strong>Material:</strong> 100% heavy-weight organic cotton (240 GSM).</li>
+            <li><strong>Fit:</strong> Vintage boxy fit, dropped shoulders. Runs true to size.</li>
+            <li><strong>Origin:</strong> Sustainably made and printed in the USA.</li>
+          </ul>
+        </div>
+
+        <hr class="product-divider">
+
+        <!-- Form Controller -->
+        <div class="order-form-container">
+          
+          <!-- Size Selector -->
+          <div class="form-section">
+            <span class="section-label">SELECT SIZE</span>
+            <div class="size-selector-grid" id="size-selector">
+              <button type="button" class="size-btn waitlist" data-size="XS">XS</button>
+              <button type="button" class="size-btn in-stock" data-size="S">S</button>
+              <button type="button" class="size-btn in-stock" data-size="M">M</button>
+              <button type="button" class="size-btn in-stock" data-size="L">L</button>
+              <button type="button" class="size-btn waitlist" data-size="XL">XL</button>
+              <button type="button" class="size-btn waitlist" data-size="XXL">XXL</button>
+            </div>
+            <span class="size-status-text" id="size-status">Select a size to view availability.</span>
+          </div>
+
+          <!-- Purchase Action Button -->
+          <div class="purchase-action-container active" id="purchase-box">
+            <button id="buy-now-btn" class="btn btn-primary btn-block" disabled>
+              Select Size to Purchase
+            </button>
+            <p class="purchase-notes">Free shipping within the US. Ships within 3-7 business days.</p>
+          </div>
+
+          <!-- Waitlist Action Form -->
+          <div class="waitlist-action-container" id="waitlist-box">
+            <p class="waitlist-lead">Size <strong id="waitlist-size-label">XS</strong> is currently out of stock. Join the waitlist and we will email you when it is available.</p>
+            <form id="waitlist-form" class="waitlist-form">
+              <input type="email" id="waitlist-email" placeholder="Enter your email address" required aria-label="Email for waitlist">
+              <button type="submit" id="waitlist-submit-btn" class="btn btn-primary">Join Waitlist</button>
+            </form>
+            <div id="waitlist-feedback" class="waitlist-feedback-message"></div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p class="branding-footer">TIUM_ · A Thinking Medium</p>
+    </footer>
+  </main>
+
+  <!-- Success Modal Overlay -->
+  <div class="success-overlay" id="success-overlay">
+    <div class="success-card">
+      <span class="success-badge">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </span>
+      <h2>Order Successful!</h2>
+      <p>Thank you for purchasing the TIUM_ Word Search Tee. A receipt and shipping tracking details have been sent to your email.</p>
+      <div class="success-stats">
+        <p class="success-quote">"Philosophy begins in wonder, and a thinking medium cultivates it."</p>
+      </div>
+      <div class="success-actions">
+        <button id="close-success-btn" class="btn btn-secondary">Return to Shop</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Client JavaScript -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const sizeSelector = document.getElementById('size-selector');
+      const sizeButtons = document.querySelectorAll('.size-btn');
+      const sizeStatus = document.getElementById('size-status');
+      const buyNowBtn = document.getElementById('buy-now-btn');
+      const purchaseBox = document.getElementById('purchase-box');
+      const waitlistBox = document.getElementById('waitlist-box');
+      const waitlistSizeLabel = document.getElementById('waitlist-size-label');
+      const waitlistForm = document.getElementById('waitlist-form');
+      const waitlistEmailInput = document.getElementById('waitlist-email');
+      const waitlistSubmitBtn = document.getElementById('waitlist-submit-btn');
+      const waitlistFeedback = document.getElementById('waitlist-feedback');
+      const successOverlay = document.getElementById('success-overlay');
+      const closeSuccessBtn = document.getElementById('close-success-btn');
+
+      const SIZE_PRICES = {
+        'XS': '$35.00',
+        'S': '$35.00',
+        'M': '$50.00',
+        'L': '$50.00',
+        'XL': '$50.00',
+        'XXL': '$50.00'
+      };
+
+      let selectedSize = null;
+      let selectedAvailability = null; // 'in-stock' or 'waitlist'
+
+      // Fetch active inventory levels and update S, M, L button states
+      async function updateInventoryStates() {
+        try {
+          const res = await fetch('/api/inventory');
+          if (!res.ok) throw new Error('Failed to fetch inventory.');
+          const stock = await res.json();
+
+          // Loop through buttons S, M, L and check stock
+          sizeButtons.forEach(btn => {
+            const size = btn.getAttribute('data-size');
+            if (['S', 'M', 'L'].includes(size)) {
+              const qty = stock[size];
+              if (qty !== undefined) {
+                if (qty <= 0) {
+                  btn.classList.remove('in-stock');
+                  btn.classList.add('waitlist');
+                } else {
+                  btn.classList.remove('waitlist');
+                  btn.classList.add('in-stock');
+                }
+              }
+            }
+          });
+
+          // Reset status text if size wasn't selected yet
+          if (!selectedSize) {
+            sizeStatus.innerText = "Select a size to view availability.";
+          } else {
+            // Re-trigger click on selected size to update UI state if stock changed
+            const activeBtn = Array.from(sizeButtons).find(b => b.getAttribute('data-size') === selectedSize);
+            if (activeBtn) {
+              // Temporary remove listener to prevent double clicks issues, then restore
+              selectedAvailability = activeBtn.classList.contains('in-stock') ? 'in-stock' : 'waitlist';
+              if (selectedAvailability === 'in-stock') {
+                sizeStatus.innerHTML = `Size <strong style="color: var(--ink)">${selectedSize}</strong> is in stock.`;
+                buyNowBtn.disabled = false;
+                buyNowBtn.innerText = `Buy Size ${selectedSize}`;
+                purchaseBox.classList.add('active');
+                waitlistBox.classList.remove('active');
+              } else {
+                sizeStatus.innerHTML = `Size <strong style="color: var(--ink)">${selectedSize}</strong> is currently waitlisted.`;
+                buyNowBtn.disabled = true;
+                buyNowBtn.innerText = `Size ${selectedSize} Waitlisted`;
+                waitlistSizeLabel.innerText = selectedSize;
+                purchaseBox.classList.remove('active');
+                waitlistBox.classList.add('active');
+              }
+            }
+          }
+
+        } catch (err) {
+          console.error("Failed to load inventory counts:", err);
+          sizeStatus.innerText = "Error checking size availability. Defaults loaded.";
+        }
+      }
+
+      // Initialize inventory check
+      updateInventoryStates();
+
+      // Check for success URL query param
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('success') === 'true') {
+        successOverlay.classList.add('active');
+        
+        // Trigger celebration confetti
+        if (typeof confetti === 'function') {
+          const duration = 3 * 1000;
+          const end = Date.now() + duration;
+
+          (function frame() {
+            confetti({
+              particleCount: 3,
+              angle: 60,
+              spread: 55,
+              origin: { x: 0, y: 0.8 }
+            });
+            confetti({
+              particleCount: 3,
+              angle: 120,
+              spread: 55,
+              origin: { x: 1, y: 0.8 }
+            });
+
+            if (Date.now() < end) {
+              requestAnimationFrame(frame);
+            }
+          }());
+        }
+
+        // Clean up URL parameters
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      // Close success modal
+      closeSuccessBtn.addEventListener('click', () => {
+        successOverlay.classList.remove('active');
+      });
+
+      // Handle size button clicks
+      sizeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          // Reset previous active state
+          sizeButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          selectedSize = btn.getAttribute('data-size');
+          selectedAvailability = btn.classList.contains('in-stock') ? 'in-stock' : 'waitlist';
+
+          // Update price display dynamically
+          const priceDisplay = document.getElementById('product-price');
+          if (priceDisplay && SIZE_PRICES[selectedSize]) {
+            priceDisplay.innerText = SIZE_PRICES[selectedSize];
+          }
+
+          // Update UI state based on availability
+          if (selectedAvailability === 'in-stock') {
+            sizeStatus.innerHTML = `Size <strong style="color: var(--ink)">${selectedSize}</strong> is in stock.`;
+            buyNowBtn.disabled = false;
+            buyNowBtn.innerText = `Buy Size ${selectedSize}`;
+            
+            purchaseBox.classList.add('active');
+            waitlistBox.classList.remove('active');
+          } else {
+            sizeStatus.innerHTML = `Size <strong style="color: var(--ink)">${selectedSize}</strong> is currently waitlisted.`;
+            buyNowBtn.disabled = true;
+            buyNowBtn.innerText = `Size ${selectedSize} Waitlisted`;
+            
+            waitlistSizeLabel.innerText = selectedSize;
+            waitlistFeedback.innerText = '';
+            waitlistEmailInput.value = '';
+            
+            purchaseBox.classList.remove('active');
+            waitlistBox.classList.add('active');
+          }
+        });
+      });
+
+      // Handle Buy Now redirection
+      buyNowBtn.addEventListener('click', async () => {
+        if (!selectedSize || selectedAvailability !== 'in-stock') return;
+
+        buyNowBtn.disabled = true;
+        buyNowBtn.innerText = 'Initiating Checkout...';
+
+        try {
+          const response = await fetch('/api/checkout', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ size: selectedSize })
+          });
+
+          if (!response.ok) {
+            const errData = await response.json();
+            throw new Error(errData.error || 'Failed to create checkout session.');
+          }
+
+          const data = await response.json();
+          if (data.url) {
+            window.location.href = data.url; // Redirect to Stripe hosted page
+          } else {
+            throw new Error('No checkout URL returned from server.');
+          }
+
+        } catch (err) {
+          console.error('Checkout error:', err);
+          alert(`Error initiating checkout: ${err.message}`);
+          buyNowBtn.disabled = false;
+          buyNowBtn.innerText = `Buy Size ${selectedSize}`;
+        }
+      });
+
+      // Handle Waitlist Form Submission
+      waitlistForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = waitlistEmailInput.value.trim();
+        if (!email || !selectedSize) return;
+
+        waitlistSubmitBtn.disabled = true;
+        waitlistSubmitBtn.innerText = 'Joining...';
+        waitlistFeedback.innerText = '';
+        waitlistFeedback.className = 'waitlist-feedback-message';
+
+        try {
+          const response = await fetch('/api/waitlist', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, size: selectedSize })
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.status === 'success') {
+            waitlistFeedback.innerText = `Added! We will email you when size ${selectedSize} is back in stock.`;
+            waitlistFeedback.classList.add('success');
+            waitlistEmailInput.value = '';
+          } else {
+            throw new Error(data.error || 'Failed to save waitlist entry.');
+          }
+
+        } catch (err) {
+          console.error('Waitlist submission error:', err);
+          waitlistFeedback.innerText = `Error joining waitlist: ${err.message}`;
+          waitlistFeedback.classList.add('error');
+        } finally {
+          waitlistSubmitBtn.disabled = false;
+          waitlistSubmitBtn.innerText = 'Join Waitlist';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -11,7 +11,6 @@
   --rule: #e5e5e5;
   
   /* Fonts */
-  --font-serif: "Fraunces", Georgia, serif;
   --font-sans: "Outfit", system-ui, -apple-system, sans-serif;
   --font-mono: "Spline Sans Mono", monospace;
   
@@ -94,18 +93,18 @@ body {
 }
 
 .brand-title {
-  font-family: var(--font-serif);
-  font-weight: 900;
-  font-size: clamp(34px, 5.5vw, 44px);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: clamp(30px, 5vw, 40px);
   line-height: 0.95;
-  letter-spacing: -0.03em;
+  letter-spacing: 0.05em;
   margin-bottom: 8px;
   text-align: center;
 }
 
 .brand-tagline {
-  font-family: var(--font-serif);
-  font-style: italic;
+  font-family: var(--font-sans);
   font-weight: 400;
   font-size: clamp(14px, 2vw, 16px);
   color: var(--ink-muted);
@@ -594,9 +593,11 @@ body {
 }
 
 .success-card h2 {
-  font-family: var(--font-serif);
-  font-size: 26px;
-  font-weight: 900;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
   margin-bottom: 8px;
 }
 
@@ -656,7 +657,7 @@ body {
 }
 
 .success-quote {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-style: italic;
   font-size: 14px;
   color: var(--ink-soft);
@@ -759,5 +760,318 @@ body {
   .word-bank {
     grid-template-columns: repeat(4, 1fr) !important;
     gap: 10px !important;
+  }
+}
+
+/* ==========================================================================
+   TIUM_ | Navigation Header Styles
+   ========================================================================== */
+.header-logo-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+.header-nav {
+  display: flex;
+  gap: 20px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.nav-item {
+  color: var(--ink-muted);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.15s ease, border-color 0.15s ease;
+  padding-bottom: 2px;
+  border-bottom: 1.5px solid transparent;
+}
+.nav-item:hover, .nav-item.active {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+@media (min-width: 1024px) {
+  .header-logo-nav {
+    align-items: flex-start;
+  }
+}
+
+/* ==========================================================================
+   TIUM_ | Storefront styling
+   ========================================================================== */
+.shop-grid {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 40px;
+  margin-top: 24px;
+}
+
+.shop-gallery {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.main-image-container {
+  width: 100%;
+  max-width: 480px;
+  border: 1px solid var(--ink);
+  padding: 16px;
+  background-color: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.shop-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-header {
+  margin-bottom: 24px;
+}
+
+.product-title {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: clamp(24px, 3.5vw, 30px);
+  line-height: 1.1;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.product-price {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.product-divider {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 24px 0;
+}
+
+.product-details {
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.description-lead {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-style: normal;
+  margin-bottom: 20px;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+.product-specs {
+  list-style: none;
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.product-specs li {
+  position: relative;
+  padding-left: 20px;
+  color: var(--ink-soft);
+}
+
+.product-specs li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: var(--ink-muted);
+}
+
+.order-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
+.size-selector-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.size-btn {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid var(--rule);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--ink);
+}
+
+.size-btn:hover {
+  border-color: var(--ink);
+}
+
+.size-btn.active {
+  background-color: var(--ink);
+  color: var(--bg-primary);
+  border-color: var(--ink);
+}
+
+.size-btn.waitlist {
+  color: var(--ink-muted);
+  position: relative;
+}
+
+.size-btn.waitlist::after {
+  content: "";
+  position: absolute;
+  width: 120%;
+  height: 1px;
+  background-color: var(--rule);
+  transform: rotate(-45deg);
+  pointer-events: none;
+}
+
+.size-btn.waitlist.active::after {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.size-status-text {
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+
+.purchase-action-container,
+.waitlist-action-container {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.purchase-action-container.active,
+.waitlist-action-container.active {
+  display: flex;
+}
+
+.btn-block {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  font-size: 14px;
+}
+
+.btn:disabled {
+  background: var(--rule) !important;
+  color: var(--ink-muted) !important;
+  border-color: var(--rule) !important;
+  cursor: not-allowed;
+}
+
+.purchase-notes {
+  font-size: 12px;
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+.waitlist-lead {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.waitlist-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.waitlist-form input[type="email"] {
+  padding: 14px 16px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  border: 1px solid var(--rule);
+  background: var(--bg-primary);
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s;
+  border-radius: 0;
+}
+
+.waitlist-form input[type="email"]:focus {
+  border-color: var(--ink);
+}
+
+.waitlist-feedback-message {
+  font-size: 13px;
+  margin-top: 4px;
+  display: none;
+}
+
+.waitlist-feedback-message.success {
+  display: block;
+  color: #000000;
+  font-weight: 500;
+}
+
+.waitlist-feedback-message.error {
+  display: block;
+  color: #ff3333;
+}
+
+@media (min-width: 1024px) {
+  .shop-grid {
+    flex-direction: row;
+    gap: 64px;
+    align-items: flex-start;
+  }
+  
+  .shop-gallery {
+    flex: 1.2;
+    position: sticky;
+    top: 100px;
+  }
+  
+  .shop-info {
+    flex: 1;
   }
 }

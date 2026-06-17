@@ -24,7 +24,7 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,300;9..144,0,400;9..144,0,500;9..144,0,700;9..144,0,900;9..144,1,400&family=Outfit:wght@300;400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css">
   
@@ -47,8 +47,16 @@
 
   <!-- Brand Header (Floating/Absolute top left on desktop) -->
   <header class="brand-header">
-    <div class="logo-wrapper">
-      <img class="tium-logo" src="assets/tium-logo.png" alt="TIUM_ Logo">
+    <div class="header-logo-nav">
+      <div class="logo-wrapper">
+        <a href="index.html" aria-label="TIUM_ Home">
+          <img class="tium-logo" src="assets/tium-logo.png" alt="TIUM_ Logo">
+        </a>
+      </div>
+      <nav class="header-nav" aria-label="Main Navigation">
+        <a href="index.html" class="nav-item active">Puzzle</a>
+        <a href="shop.html" class="nav-item">Shop</a>
+      </nav>
     </div>
   </header>
 
