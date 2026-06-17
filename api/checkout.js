@@ -85,6 +85,9 @@ export default async function handler(req, res) {
   try {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
+      payment_intent_data: {
+        capture_method: 'manual', // Hold funds, capture later when shipped
+      },
       line_items: [
         {
           price: priceId,
@@ -98,22 +101,27 @@ export default async function handler(req, res) {
         allowed_countries: ['US', 'CA', 'GB', 'AU', 'NZ', 'FR', 'DE', 'IT', 'ES', 'NL', 'SE'],
       },
       billing_address_collection: 'required',
-      shipping_options: [
-        {
-          shipping_rate_data: {
-            type: 'fixed_amount',
-            fixed_amount: {
-              amount: 0, // Free shipping
-              currency: 'usd',
+      shipping_options: (process.env.SHIPPING_RATE_US || process.env.SHIPPING_RATE_INT)
+        ? [
+            ...(process.env.SHIPPING_RATE_US ? [{ shipping_rate: process.env.SHIPPING_RATE_US }] : []),
+            ...(process.env.SHIPPING_RATE_INT ? [{ shipping_rate: process.env.SHIPPING_RATE_INT }] : []),
+          ]
+        : [
+            {
+              shipping_rate_data: {
+                type: 'fixed_amount',
+                fixed_amount: {
+                  amount: 500, // $5.00 USD fallback standard rate
+                  currency: 'usd',
+                },
+                display_name: 'Standard Shipping',
+                delivery_estimate: {
+                  minimum: { unit: 'business_day', value: 3 },
+                  maximum: { unit: 'business_day', value: 7 },
+                },
+              },
             },
-            display_name: 'Free Shipping',
-            delivery_estimate: {
-              minimum: { unit: 'business_day', value: 3 },
-              maximum: { unit: 'business_day', value: 7 },
-            },
-          },
-        },
-      ],
+          ],
       metadata: {
         product: 'TT-01', // Updated to match user's Stripe product name
         size: size,

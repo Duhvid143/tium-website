@@ -48,11 +48,6 @@
   <!-- Brand Header -->
   <header class="brand-header">
     <div class="header-logo-nav">
-      <div class="logo-wrapper">
-        <a href="index.html" aria-label="TIUM_ Home">
-          <img class="tium-logo" src="assets/tium-logo.png" alt="TIUM_ Logo">
-        </a>
-      </div>
       <nav class="header-nav" aria-label="Main Navigation">
         <a href="index.html" class="nav-item">Puzzle</a>
         <a href="shop.html" class="nav-item active">Shop</a>
@@ -66,8 +61,17 @@
       
       <!-- Left Column: Product Image -->
       <section class="shop-gallery" aria-label="Product Images">
-        <div class="main-image-container">
+        <div class="main-image-container" id="main-image-container">
           <img id="product-main-image" src="assets/tium-shirt.jpg" alt="TIUM_ Word Search Tee - Front & Back Design" class="product-image">
+          <div class="zoom-indicator" aria-hidden="true">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              <line x1="11" y1="8" x2="11" y2="14"></line>
+              <line x1="8" y1="11" x2="14" y2="11"></line>
+            </svg>
+            <span>Zoom</span>
+          </div>
         </div>
       </section>
 
@@ -85,9 +89,9 @@
           
           <ul class="product-specs">
             <li><strong>Design:</strong> Front features the wordmark "A Thinking Medium". Back features a full, solvable 12x12 word search grid.</li>
-            <li><strong>Material:</strong> 100% heavy-weight organic cotton (240 GSM).</li>
-            <li><strong>Fit:</strong> Vintage boxy fit, dropped shoulders. Runs true to size.</li>
-            <li><strong>Origin:</strong> Sustainably made and printed in the USA.</li>
+            <li><strong>Material:</strong> 100% combed cotton, heavy weight (7.1 oz/yd² / 240 GSM), 16-singles. Preshrunk to minimize shrinkage.</li>
+            <li><strong>Fit:</strong> Relaxed, boxy fit with dropped shoulders, shorter body length, and wide neck ribbing. Runs true to size.</li>
+            <li><strong>Origin:</strong> Ethically and sustainably manufactured under BSCI guidelines in Bangladesh; custom printed in the USA.</li>
           </ul>
         </div>
 
@@ -155,6 +159,25 @@
         <button id="close-success-btn" class="btn btn-secondary">Return to Shop</button>
       </div>
     </div>
+  </div>
+
+  <!-- Lightbox Modal for Zoomed View -->
+  <div class="lightbox-modal" id="lightbox-modal" aria-hidden="true" role="dialog">
+    <button class="lightbox-close" id="lightbox-close" aria-label="Close zoomed view">×</button>
+    <div class="lightbox-content" id="lightbox-content">
+      <img id="lightbox-image" src="assets/tium-shirt.jpg" alt="TIUM_ Word Search Tee - Zoomed View">
+    </div>
+    <div class="lightbox-controls">
+      <button class="control-btn" id="zoom-out-btn" aria-label="Zoom out">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+      <input type="range" id="zoom-slider" min="1" max="4" step="0.1" value="1" aria-label="Zoom level">
+      <button class="control-btn" id="zoom-in-btn" aria-label="Zoom in">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+      <span class="zoom-value" id="zoom-value">100%</span>
+    </div>
+    <div class="lightbox-instruction" id="lightbox-instruction">Drag to pan when zoomed in</div>
   </div>
 
   <!-- Client JavaScript -->
@@ -398,6 +421,207 @@
           waitlistSubmitBtn.innerText = 'Join Waitlist';
         }
       });
+
+      // --- IMAGE ZOOM INTERACTIVITY ---
+      const imageContainer = document.getElementById('main-image-container');
+      const productImage = document.getElementById('product-main-image');
+      
+      // 1. Desktop Hover Zoom
+      if (imageContainer && productImage) {
+        imageContainer.addEventListener('mousemove', (e) => {
+          const rect = imageContainer.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
+          const S = 2.2; // scale factor
+          const tx = (0.5 - x / rect.width) * (S - 1) * rect.width;
+          const ty = (0.5 - y / rect.height) * (S - 1) * rect.height;
+          
+          productImage.style.transform = `translate(${tx}px, ${ty}px) scale(${S})`;
+        });
+        
+        imageContainer.addEventListener('mouseleave', () => {
+          productImage.style.transform = 'translate(0px, 0px) scale(1)';
+        });
+      }
+
+      // 2. Lightbox Modal Zoom & Pan
+      const lightboxModal = document.getElementById('lightbox-modal');
+      const lightboxClose = document.getElementById('lightbox-close');
+      const lightboxContent = document.getElementById('lightbox-content');
+      const lightboxImage = document.getElementById('lightbox-image');
+      const zoomSlider = document.getElementById('zoom-slider');
+      const zoomValue = document.getElementById('zoom-value');
+      const zoomOutBtn = document.getElementById('zoom-out-btn');
+      const zoomInBtn = document.getElementById('zoom-in-btn');
+      const lightboxInstruction = document.getElementById('lightbox-instruction');
+
+      let zoomLevel = 1;
+      let isDragging = false;
+      let startX = 0, startY = 0;
+      let translateX = 0, translateY = 0;
+
+      function updateZoom(newZoom) {
+        zoomLevel = Math.max(1, Math.min(4, newZoom));
+        zoomSlider.value = zoomLevel;
+        zoomValue.innerText = `${Math.round(zoomLevel * 100)}%`;
+        
+        if (zoomLevel === 1) {
+          translateX = 0;
+          translateY = 0;
+          lightboxInstruction.classList.remove('visible');
+          if (lightboxContent) lightboxContent.style.cursor = 'grab';
+        } else {
+          lightboxInstruction.classList.add('visible');
+          if (lightboxContent) lightboxContent.style.cursor = 'grab';
+        }
+        applyTransform();
+      }
+
+      function applyTransform() {
+        if (lightboxImage) {
+          lightboxImage.style.transform = `translate(${translateX}px, ${translateY}px) scale(${zoomLevel})`;
+        }
+      }
+
+      // Open Lightbox
+      if (imageContainer) {
+        imageContainer.addEventListener('click', () => {
+          if (lightboxModal) {
+            lightboxModal.classList.add('active');
+            lightboxModal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden'; // Prevent body scroll
+            updateZoom(1);
+          }
+        });
+      }
+
+      // Close Lightbox
+      function closeLightbox() {
+        if (lightboxModal) {
+          lightboxModal.classList.remove('active');
+          lightboxModal.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = ''; // Restore body scroll
+        }
+      }
+
+      if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+      if (lightboxModal) {
+        lightboxModal.addEventListener('click', (e) => {
+          if (e.target === lightboxModal) {
+            closeLightbox();
+          }
+        });
+      }
+
+      // Escape key to close
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeLightbox();
+        }
+      });
+
+      // Zoom Slider input
+      if (zoomSlider) {
+        zoomSlider.addEventListener('input', () => {
+          updateZoom(parseFloat(zoomSlider.value));
+        });
+      }
+
+      // Zoom Buttons
+      if (zoomOutBtn) {
+        zoomOutBtn.addEventListener('click', () => {
+          updateZoom(zoomLevel - 0.2);
+        });
+      }
+      if (zoomInBtn) {
+        zoomInBtn.addEventListener('click', () => {
+          updateZoom(zoomLevel + 0.2);
+        });
+      }
+
+      // Wheel Zoom
+      if (lightboxContent) {
+        lightboxContent.addEventListener('wheel', (e) => {
+          e.preventDefault();
+          const delta = -e.deltaY * 0.005;
+          updateZoom(zoomLevel + delta);
+        }, { passive: false });
+
+        // Double Click to toggle zoom
+        lightboxContent.addEventListener('dblclick', () => {
+          if (zoomLevel > 1) {
+            updateZoom(1);
+          } else {
+            updateZoom(2.5);
+          }
+        });
+
+        // Mouse Drag to Pan
+        lightboxContent.addEventListener('mousedown', (e) => {
+          if (zoomLevel <= 1) return;
+          isDragging = true;
+          startX = e.clientX - translateX;
+          startY = e.clientY - translateY;
+          lightboxContent.style.cursor = 'grabbing';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+          if (!isDragging) return;
+          translateX = e.clientX - startX;
+          translateY = e.clientY - startY;
+
+          // Constrain bounds roughly based on viewport vs image size
+          const imgRect = lightboxImage.getBoundingClientRect();
+          const containerRect = lightboxContent.getBoundingClientRect();
+          
+          const maxTx = Math.max(0, (imgRect.width - containerRect.width) / 2) + 50;
+          const maxTy = Math.max(0, (imgRect.height - containerRect.height) / 2) + 50;
+
+          translateX = Math.max(-maxTx, Math.min(maxTx, translateX));
+          translateY = Math.max(-maxTy, Math.min(maxTy, translateY));
+
+          applyTransform();
+        });
+
+        window.addEventListener('mouseup', () => {
+          isDragging = false;
+          if (lightboxContent) {
+            lightboxContent.style.cursor = zoomLevel > 1 ? 'grab' : 'default';
+          }
+        });
+
+        // Touch Drag to Pan (mobile)
+        lightboxContent.addEventListener('touchstart', (e) => {
+          if (zoomLevel <= 1) return;
+          isDragging = true;
+          const touch = e.touches[0];
+          startX = touch.clientX - translateX;
+          startY = touch.clientY - translateY;
+        }, { passive: true });
+
+        lightboxContent.addEventListener('touchmove', (e) => {
+          if (!isDragging) return;
+          const touch = e.touches[0];
+          translateX = touch.clientX - startX;
+          translateY = touch.clientY - startY;
+
+          const imgRect = lightboxImage.getBoundingClientRect();
+          const containerRect = lightboxContent.getBoundingClientRect();
+          
+          const maxTx = Math.max(0, (imgRect.width - containerRect.width) / 2) + 50;
+          const maxTy = Math.max(0, (imgRect.height - containerRect.height) / 2) + 50;
+
+          translateX = Math.max(-maxTx, Math.min(maxTx, translateX));
+          translateY = Math.max(-maxTy, Math.min(maxTy, translateY));
+
+          applyTransform();
+        }, { passive: true });
+
+        lightboxContent.addEventListener('touchend', () => {
+          isDragging = false;
+        });
+      }
     });
   </script>
 </body>

@@ -115,9 +115,11 @@ body {
 /* Responsive Placement */
 @media (min-width: 1024px) {
   .brand-header {
-    position: absolute;
-    top: 0;
-    left: 0;
+    position: fixed;
+    top: 50%;
+    left: 48px;
+    transform: translateY(-50%);
+    z-index: 100;
   }
   .app-container {
     padding-top: 0;
@@ -797,6 +799,13 @@ body {
 @media (min-width: 1024px) {
   .header-logo-nav {
     align-items: flex-start;
+    gap: 20px;
+  }
+  .header-nav {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+    margin-top: 8px;
   }
 }
 
@@ -826,6 +835,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
+  cursor: zoom-in;
 }
 
 .product-image {
@@ -833,6 +845,34 @@ body {
   height: auto;
   display: block;
   object-fit: contain;
+  transform-origin: center center;
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.zoom-indicator {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--bg-primary);
+  border: 1.5px solid var(--ink);
+  padding: 6px 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  opacity: 0.8;
+}
+
+.main-image-container:hover .zoom-indicator {
+  opacity: 0;
+  transform: translateY(4px);
 }
 
 .shop-info {
@@ -1074,4 +1114,162 @@ body {
   .shop-info {
     flex: 1;
   }
+}
+
+/* ==========================================================================
+   TIUM_ | Lightbox Modal & Zoom Controls styling
+   ========================================================================== */
+.lightbox-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  background-color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lightbox-modal.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: none;
+  border: none;
+  font-size: 32px;
+  cursor: pointer;
+  color: var(--ink);
+  z-index: 1010;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.lightbox-close:hover {
+  transform: rotate(90deg);
+  opacity: 0.7;
+}
+
+.lightbox-content {
+  width: 90%;
+  height: 70%;
+  max-width: 800px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  cursor: grab;
+}
+
+.lightbox-content:active {
+  cursor: grabbing;
+}
+
+.lightbox-content img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transform: scale(1);
+  transform-origin: center center;
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  pointer-events: none;
+}
+
+.lightbox-controls {
+  position: absolute;
+  bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background-color: var(--bg-primary);
+  border: 1.5px solid var(--ink);
+  padding: 8px 16px;
+  z-index: 1010;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.control-btn {
+  background: none;
+  border: none;
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  transition: opacity 0.2s;
+}
+
+.control-btn:hover {
+  opacity: 0.6;
+}
+
+#zoom-slider {
+  -webkit-appearance: none;
+  width: 120px;
+  height: 2px;
+  background: var(--rule);
+  outline: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+#zoom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: var(--ink);
+  cursor: pointer;
+  border-radius: 50%;
+  transition: transform 0.1s ease;
+}
+
+#zoom-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.3);
+}
+
+.zoom-value {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  min-width: 40px;
+  text-align: right;
+  font-weight: 500;
+}
+
+.lightbox-instruction {
+  position: absolute;
+  bottom: 96px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  letter-spacing: 0.05em;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.lightbox-instruction.visible {
+  opacity: 1;
 }
