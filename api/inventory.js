@@ -34,10 +34,10 @@ export default async function handler(req, res) {
     let stockM = await redis.get('stock:M');
     let stockL = await redis.get('stock:L');
 
-    // Initialize to default stock levels (S is inactive on Stripe, M/L have 8 items)
+    // Initialize to default stock levels (All S, M, L have 8 items in stock)
     if (stockS === null) {
-      await redis.set('stock:S', 0);
-      stockS = '0';
+      await redis.set('stock:S', 8);
+      stockS = '8';
     }
     if (stockM === null) {
       await redis.set('stock:M', 8);

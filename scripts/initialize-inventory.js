@@ -26,12 +26,12 @@ async function initInventory() {
     await client.connect();
 
     console.log("Initializing stock levels...");
-    await client.set('stock:S', 0); // 0 since S is inactive on Stripe
+    await client.set('stock:S', 8); // 8 in inventory
     await client.set('stock:M', 8); // 8 in inventory
     await client.set('stock:L', 8); // 8 in inventory
 
     console.log("Stock levels initialized successfully:");
-    console.log("  stock:S -> 0 (inactive on Stripe)");
+    console.log("  stock:S -> 8");
     console.log("  stock:M -> 8");
     console.log("  stock:L -> 8");
 

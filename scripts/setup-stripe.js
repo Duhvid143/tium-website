@@ -17,18 +17,18 @@ const stripe = new Stripe(stripeSecretKey);
 
 async function setupStripe() {
   try {
-    console.log("Setting up TIUM_ Word Search Tee on Stripe...");
+    console.log("Setting up TT-01 on Stripe...");
 
     // 1. Check if the product already exists
     let product;
     const products = await stripe.products.list({ limit: 100 });
-    product = products.data.find(p => p.name === 'TIUM_ Word Search Tee');
+    product = products.data.find(p => p.name === 'TT-01');
 
     if (product) {
       console.log(`Product already exists: ${product.id}`);
     } else {
       product = await stripe.products.create({
-        name: 'TIUM_ Word Search Tee',
+        name: 'TT-01',
         description: 'A Thinking Medium Word Search Tee. Try to solve this.',
         images: ['https://athinkingmedium.com/assets/tium-shirt.jpg'],
         metadata: {
@@ -39,12 +39,16 @@ async function setupStripe() {
     }
 
     // 2. Check or create prices for sizes S, M, L
-    const sizes = ['S', 'M', 'L'];
+    const sizePrices = {
+      'S': 5000, // $50.00
+      'M': 5000, // $50.00
+      'L': 5000  // $50.00
+    };
     const priceMap = {};
 
     const prices = await stripe.prices.list({ product: product.id, limit: 100 });
 
-    for (const size of sizes) {
+    for (const size of Object.keys(sizePrices)) {
       let price = prices.data.find(p => p.metadata && p.metadata.size === size);
 
       if (price) {
@@ -52,7 +56,7 @@ async function setupStripe() {
       } else {
         price = await stripe.prices.create({
           product: product.id,
-          unit_amount: 3500, // $35.00 USD
+          unit_amount: sizePrices[size],
           currency: 'usd',
           metadata: { size }
         });

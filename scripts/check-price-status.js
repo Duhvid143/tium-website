@@ -16,11 +16,9 @@ const stripeSecretKey = secretKeyMatch[1];
 const stripe = new Stripe(stripeSecretKey);
 
 async function checkPriceStatus() {
-  const priceIds = [
-    'price_1Tj9FyCGFjNLD0objvOmTYy4', // S
-    'price_1Tj9FyCGFjNLD0obtQx3kLId', // M
-    'price_1Tj9FyCGFjNLD0obWMyVa7dr'  // L
-  ];
+  const pricesJsonPath = path.resolve(process.cwd(), 'stripe-prices.json');
+  const pricesData = JSON.parse(fs.readFileSync(pricesJsonPath, 'utf-8'));
+  const priceIds = Object.values(pricesData);
 
   for (const id of priceIds) {
     try {
