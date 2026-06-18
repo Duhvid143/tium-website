@@ -56,11 +56,11 @@ export default async function handler(req, res) {
       redis = await getRedisClient();
       const stockKey = `stock:${size}`;
       
-      // Get current stock, default to 8 if not initialized
+      // Get current stock, default to 6 if not initialized
       let currentStock = await redis.get(stockKey);
       if (currentStock === null) {
-        await redis.set(stockKey, 8);
-        currentStock = '8';
+        await redis.set(stockKey, 6);
+        currentStock = '6';
       }
 
       const stockNum = parseInt(currentStock, 10);
