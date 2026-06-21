@@ -138,6 +138,22 @@
 
     </div>
 
+    <!-- Newsletter Signup Section -->
+    <section class="newsletter-section" aria-labelledby="newsletter-title">
+      <div class="newsletter-header">
+        <h2 id="newsletter-title" class="newsletter-heading">Join the newsletter</h2>
+        <p class="newsletter-subheading">Stay updated on events, releases, and thoughts.</p>
+      </div>
+      <form id="newsletter-form" class="newsletter-form">
+        <div class="newsletter-fields">
+          <input type="email" id="newsletter-email" class="newsletter-input" placeholder="Email Address" required aria-label="Email Address">
+          <input type="tel" id="newsletter-phone" class="newsletter-input" placeholder="Phone Number" required aria-label="Phone Number">
+          <button type="submit" id="newsletter-submit-btn" class="btn btn-primary">Subscribe</button>
+        </div>
+        <div id="newsletter-feedback" class="feedback-message"></div>
+      </form>
+    </section>
+
     <!-- Footer -->
     <footer class="app-footer">
       <p class="branding-footer">TIUM_ · A Thinking Medium</p>
@@ -620,6 +636,55 @@
 
         lightboxContent.addEventListener('touchend', () => {
           isDragging = false;
+        });
+      }
+
+      // Handle Newsletter Form Submission
+      const newsletterForm = document.getElementById('newsletter-form');
+      const newsletterEmail = document.getElementById('newsletter-email');
+      const newsletterPhone = document.getElementById('newsletter-phone');
+      const newsletterSubmitBtn = document.getElementById('newsletter-submit-btn');
+      const newsletterFeedback = document.getElementById('newsletter-feedback');
+
+      if (newsletterForm) {
+        newsletterForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const email = newsletterEmail.value.trim();
+          const phone = newsletterPhone.value.trim();
+          if (!email || !phone) return;
+
+          newsletterSubmitBtn.disabled = true;
+          newsletterSubmitBtn.innerText = 'Subscribing...';
+          newsletterFeedback.innerText = '';
+          newsletterFeedback.className = 'feedback-message';
+
+          try {
+            const response = await fetch('/api/subscribe', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ email, phone, source: 'footer' })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.status === 'success') {
+              newsletterFeedback.innerText = 'Successfully subscribed to newsletter.';
+              newsletterFeedback.className = 'feedback-message success active';
+              newsletterEmail.value = '';
+              newsletterPhone.value = '';
+            } else {
+              throw new Error(data.error || 'Failed to subscribe.');
+            }
+          } catch (err) {
+            console.error('Newsletter submission error:', err);
+            newsletterFeedback.innerText = err.message;
+            newsletterFeedback.className = 'feedback-message error active';
+          } finally {
+            newsletterSubmitBtn.disabled = false;
+            newsletterSubmitBtn.innerText = 'Subscribe';
+          }
         });
       }
     });

@@ -44,14 +44,26 @@ export default async function handler(req, res) {
 
   try {
     const redis = await getRedisClient();
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedSize = size.toUpperCase();
+
     const entry = {
-      email: email.trim().toLowerCase(),
-      size: size.toUpperCase(),
+      email: normalizedEmail,
+      size: normalizedSize,
       timestamp: Date.now()
     };
 
     // Store as JSON in a Redis list named 'waitlist'
     await redis.rPush('waitlist', JSON.stringify(entry));
+
+    // Also add to the newsletter list
+    const newsletterEntry = {
+      email: normalizedEmail,
+      phone: null,
+      source: `waitlist_${normalizedSize}`,
+      timestamp: Date.now()
+    };
+    await redis.rPush('newsletter', JSON.stringify(newsletterEntry));
 
     return res.status(200).json({ status: "success", message: "Successfully added to waitlist." });
   } catch (error) {

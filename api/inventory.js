@@ -23,7 +23,7 @@ export default async function handler(req, res) {
   // Local fallback if database is not configured
   if (!redisUrl) {
     console.warn("REDIS_URL environment variable is not configured. Returning mock inventory.");
-    return res.status(200).json({ S: 6, M: 6, L: 6 });
+    return res.status(200).json({ S: 3, M: 6, L: 4 });
   }
 
   try {
@@ -34,18 +34,18 @@ export default async function handler(req, res) {
     let stockM = await redis.get('stock:M');
     let stockL = await redis.get('stock:L');
 
-    // Initialize to default stock levels (All S, M, L have 6 items in stock)
+    // Initialize to default stock levels (S: 3, M: 6, L: 4)
     if (stockS === null) {
-      await redis.set('stock:S', 6);
-      stockS = '6';
+      await redis.set('stock:S', 3);
+      stockS = '3';
     }
     if (stockM === null) {
       await redis.set('stock:M', 6);
       stockM = '6';
     }
     if (stockL === null) {
-      await redis.set('stock:L', 6);
-      stockL = '6';
+      await redis.set('stock:L', 4);
+      stockL = '4';
     }
 
     return res.status(200).json({

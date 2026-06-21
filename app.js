@@ -43,6 +43,17 @@ const playerNameInput = document.getElementById("player-name-input");
 const submitScoreBtn = document.getElementById("submit-score-btn");
 const submitScoreContainer = document.getElementById("submit-score-container");
 
+const newsletterForm = document.getElementById("newsletter-form");
+const newsletterEmail = document.getElementById("newsletter-email");
+const newsletterPhone = document.getElementById("newsletter-phone");
+const newsletterSubmitBtn = document.getElementById("newsletter-submit-btn");
+const newsletterFeedback = document.getElementById("newsletter-feedback");
+
+const puzzleNewsletterContainer = document.getElementById("puzzle-newsletter-container");
+const puzzleEmailInput = document.getElementById("puzzle-email-input");
+const puzzleNewsletterBtn = document.getElementById("puzzle-newsletter-btn");
+const puzzleNewsletterFeedback = document.getElementById("puzzle-newsletter-feedback");
+
 /* ==========================================================================
    1. Word Search Generation Algorithm
    ========================================================================== */
@@ -752,6 +763,12 @@ function checkWinCondition() {
       finalTimeEl.textContent = timerCounter.textContent;
       playerNameInput.value = "";
       submitScoreContainer.style.display = "flex"; // Show input fields
+      if (puzzleNewsletterContainer) {
+        puzzleNewsletterContainer.style.display = "flex";
+        puzzleEmailInput.value = "";
+        puzzleNewsletterFeedback.innerText = "";
+        puzzleNewsletterFeedback.className = "feedback-message";
+      }
       successOverlay.classList.add("active");
     }, 800);
   }
@@ -854,6 +871,92 @@ function init() {
   document.getElementById("close-success-btn").addEventListener("click", () => {
     successOverlay.classList.remove("active");
   });
+
+  // General newsletter submission
+  if (newsletterForm) {
+    newsletterForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = newsletterEmail.value.trim();
+      const phone = newsletterPhone.value.trim();
+      if (!email || !phone) return;
+
+      newsletterSubmitBtn.disabled = true;
+      newsletterSubmitBtn.innerText = "Subscribing...";
+      newsletterFeedback.innerText = "";
+      newsletterFeedback.className = "feedback-message";
+
+      try {
+        const response = await fetch("/api/subscribe", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email, phone, source: "footer" })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === "success") {
+          newsletterFeedback.innerText = "Successfully subscribed to newsletter.";
+          newsletterFeedback.className = "feedback-message success active";
+          newsletterEmail.value = "";
+          newsletterPhone.value = "";
+        } else {
+          throw new Error(data.error || "Failed to subscribe.");
+        }
+      } catch (err) {
+        console.error("Newsletter submission error:", err);
+        newsletterFeedback.innerText = err.message;
+        newsletterFeedback.className = "feedback-message error active";
+      } finally {
+        newsletterSubmitBtn.disabled = false;
+        newsletterSubmitBtn.innerText = "Subscribe";
+      }
+    });
+  }
+
+  // Success overlay optional email subscription
+  if (puzzleNewsletterBtn) {
+    puzzleNewsletterBtn.onclick = async () => {
+      const email = puzzleEmailInput.value.trim();
+      if (!email) return;
+
+      puzzleNewsletterBtn.disabled = true;
+      puzzleNewsletterBtn.innerText = "Subscribing...";
+      puzzleNewsletterFeedback.innerText = "";
+      puzzleNewsletterFeedback.className = "feedback-message";
+
+      try {
+        const response = await fetch("/api/subscribe", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email, source: "puzzle_completion" })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === "success") {
+          puzzleNewsletterFeedback.innerText = "Successfully subscribed.";
+          puzzleNewsletterFeedback.className = "feedback-message success active";
+          puzzleEmailInput.value = "";
+          setTimeout(() => {
+            puzzleNewsletterContainer.style.display = "none";
+          }, 1500);
+        } else {
+          throw new Error(data.error || "Failed to subscribe.");
+        }
+      } catch (err) {
+        console.error("Puzzle subscription error:", err);
+        puzzleNewsletterFeedback.innerText = err.message;
+        puzzleNewsletterFeedback.className = "feedback-message error active";
+      } finally {
+        puzzleNewsletterBtn.disabled = false;
+        puzzleNewsletterBtn.innerText = "Subscribe";
+      }
+    };
+  }
   
   // Resizing events to adjust overlays
   window.addEventListener("resize", () => {

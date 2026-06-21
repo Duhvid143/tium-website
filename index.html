@@ -145,6 +145,22 @@
 
       </div>
 
+      <!-- Newsletter Signup Section -->
+      <section class="newsletter-section" aria-labelledby="newsletter-title">
+        <div class="newsletter-header">
+          <h2 id="newsletter-title" class="newsletter-heading">Join the newsletter</h2>
+          <p class="newsletter-subheading">Stay updated on events, releases, and thoughts.</p>
+        </div>
+        <form id="newsletter-form" class="newsletter-form">
+          <div class="newsletter-fields">
+            <input type="email" id="newsletter-email" class="newsletter-input" placeholder="Email Address" required aria-label="Email Address">
+            <input type="tel" id="newsletter-phone" class="newsletter-input" placeholder="Phone Number" required aria-label="Phone Number">
+            <button type="submit" id="newsletter-submit-btn" class="btn btn-primary">Subscribe</button>
+          </div>
+          <div id="newsletter-feedback" class="feedback-message"></div>
+        </form>
+      </section>
+
       <!-- Footer Controls & Branding -->
       <footer class="app-footer">
         <p class="branding-footer">TIUM_ · A Thinking Medium</p>
@@ -170,6 +186,16 @@
         <label for="player-name-input" class="submit-label">Save your time to the leaderboard:</label>
         <input type="text" id="player-name-input" placeholder="Enter your name" maxlength="12">
         <button id="submit-score-btn" class="btn btn-primary" style="margin-top: 6px;">Submit Score</button>
+      </div>
+
+      <!-- Optional Event Updates Subscription -->
+      <div id="puzzle-newsletter-container" class="puzzle-newsletter-container">
+        <label for="puzzle-email-input" class="submit-label">Stay up to date with our events (Optional):</label>
+        <div class="puzzle-newsletter-row">
+          <input type="email" id="puzzle-email-input" class="puzzle-newsletter-input" placeholder="Enter your email" aria-label="Email address for event updates">
+          <button id="puzzle-newsletter-btn" class="btn btn-primary">Subscribe</button>
+        </div>
+        <div id="puzzle-newsletter-feedback" class="feedback-message"></div>
       </div>
 
       <div class="success-stats">

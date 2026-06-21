@@ -1273,3 +1273,153 @@ body {
 .lightbox-instruction.visible {
   opacity: 1;
 }
+
+/* ==========================================================================
+   TIUM_ | Newsletter Subscription Styles
+   ========================================================================== */
+.newsletter-section {
+  width: 100%;
+  border-top: 1.5px solid var(--ink);
+  padding: 32px 0;
+  margin: 48px 0 24px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.newsletter-header {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.newsletter-heading {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.newsletter-subheading {
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  color: var(--ink-muted);
+}
+
+.newsletter-form {
+  width: 100%;
+}
+
+.newsletter-fields {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  align-items: flex-end;
+}
+
+.newsletter-input {
+  border: none;
+  border-bottom: 1.5px solid var(--ink);
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  padding: 6px 0;
+  outline: none;
+  flex: 1;
+  color: var(--ink);
+  min-width: 0;
+}
+
+.newsletter-input::placeholder {
+  color: var(--ink-muted);
+  font-size: 12px;
+}
+
+.newsletter-fields .btn {
+  flex-shrink: 0;
+  height: 34px;
+}
+
+.feedback-message {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  margin-top: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: none;
+}
+
+.feedback-message.active {
+  display: block;
+}
+
+.feedback-message.success {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.feedback-message.error {
+  color: #ff3333;
+}
+
+/* Success Card Puzzle Newsletter Section */
+.puzzle-newsletter-container {
+  margin: 16px 0 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.puzzle-newsletter-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  max-width: 280px;
+  justify-content: center;
+  align-items: flex-end;
+  margin-top: 6px;
+}
+
+.puzzle-newsletter-input {
+  border: none;
+  border-bottom: 1.5px solid var(--ink);
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  padding: 6px 0;
+  text-align: center;
+  outline: none;
+  flex: 1;
+  min-width: 0;
+  color: var(--ink);
+}
+
+.puzzle-newsletter-input::placeholder {
+  color: var(--ink-muted);
+  font-size: 12px;
+}
+
+.puzzle-newsletter-row .btn {
+  flex-shrink: 0;
+  height: 31px;
+  padding: 6px 12px;
+}
+
+/* Responsiveness for Newsletter Section */
+@media (max-width: 680px) {
+  .newsletter-fields {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+  
+  .newsletter-fields .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
