@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=no">
+  <title>Inventory Admin | TIUM_ | A Thinking Medium</title>
+  
+  <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-title" content="TIUM_" />
+  <link rel="manifest" href="site.webmanifest" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="admin-page">
+
+  <!-- Brand Header -->
+  <header class="brand-header">
+    <div class="header-logo-nav">
+      <nav class="header-nav" aria-label="Main Navigation">
+        <a href="index.html" class="nav-item">Puzzle</a>
+        <a href="shop.html" class="nav-item">Shop</a>
+        <a href="admin.html" class="nav-item active">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Admin Container -->
+  <main class="app-container">
+    <div class="admin-wrapper">
+      <div class="admin-card">
+        <h1 class="admin-title">TIUM_ INVENTORY</h1>
+        <p class="admin-lead">Update the live storefront stock counts for the word search tee.</p>
+        
+        <hr class="product-divider">
+        
+        <form id="admin-form" class="admin-form">
+          <!-- Password -->
+          <div class="form-section">
+            <label for="admin-password" class="section-label">ADMIN PASSWORD</label>
+            <input type="password" id="admin-password" placeholder="Enter password to save changes" required>
+          </div>
+          
+          <!-- Inventory Inputs -->
+          <div class="form-section">
+            <label class="section-label">STOCK COUNT BY SIZE</label>
+            <div class="admin-stock-grid">
+              <div class="stock-input-group">
+                <span class="stock-size-label">SMALL</span>
+                <input type="number" id="stock-s" min="0" value="0" required>
+              </div>
+              <div class="stock-input-group">
+                <span class="stock-size-label">MEDIUM</span>
+                <input type="number" id="stock-m" min="0" value="0" required>
+              </div>
+              <div class="stock-input-group">
+                <span class="stock-size-label">LARGE</span>
+                <input type="number" id="stock-l" min="0" value="0" required>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Submit Button -->
+          <button type="submit" id="admin-submit-btn" class="btn btn-primary btn-block">
+            Save Inventory Changes
+          </button>
+        </form>
+
+        <div id="admin-feedback" class="admin-feedback-message"></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const adminForm = document.getElementById('admin-form');
+      const passwordInput = document.getElementById('admin-password');
+      const stockSInput = document.getElementById('stock-s');
+      const stockMInput = document.getElementById('stock-m');
+      const stockLInput = document.getElementById('stock-l');
+      const submitBtn = document.getElementById('admin-submit-btn');
+      const feedback = document.getElementById('admin-feedback');
+
+      // 1. Fetch current inventory on load
+      try {
+        const res = await fetch('/api/inventory');
+        if (!res.ok) throw new Error('Failed to fetch current inventory.');
+        const data = await res.json();
+        
+        stockSInput.value = data.S ?? 0;
+        stockMInput.value = data.M ?? 0;
+        stockLInput.value = data.L ?? 0;
+      } catch (err) {
+        console.error(err);
+        feedback.innerText = 'Error loading current stock levels: ' + err.message;
+        feedback.className = 'admin-feedback-message error';
+      }
+
+      // 2. Handle Form Submit
+      adminForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Saving Changes...';
+        feedback.innerText = '';
+        feedback.className = 'admin-feedback-message';
+
+        const payload = {
+          password: passwordInput.value,
+          S: parseInt(stockSInput.value, 10),
+          M: parseInt(stockMInput.value, 10),
+          L: parseInt(stockLInput.value, 10)
+        };
+
+        try {
+          const response = await fetch('/api/admin/update-inventory', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            feedback.innerText = 'Inventory updated successfully!';
+            feedback.className = 'admin-feedback-message success';
+            passwordInput.value = ''; // clear password on success
+          } else {
+            throw new Error(data.error || 'Failed to update inventory.');
+          }
+        } catch (err) {
+          console.error(err);
+          feedback.innerText = err.message;
+          feedback.className = 'admin-feedback-message error';
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.innerText = 'Save Inventory Changes';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
